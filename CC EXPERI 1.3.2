@@ -1,0 +1,70 @@
+import matplotlib.pyplot as plt
+
+def largestRectangleArea(heights):
+    stack = []
+    max_area = 0
+    left = right = height = 0
+
+    h = heights + [0]  # Add a dummy bar
+
+    for i in range(len(h)):
+        while stack and h[i] < h[stack[-1]]:
+            top = stack.pop()
+            current_height = h[top]
+
+            if stack:
+                width = i - stack[-1] - 1
+                start = stack[-1] + 1
+            else:
+                width = i
+                start = 0
+
+            area = current_height * width
+
+            if area > max_area:
+                max_area = area
+                left = start
+                right = i - 1
+                height = current_height
+
+        stack.append(i)
+
+    return max_area, left, right, height
+
+n = int(input("Enter number of bars: "))
+
+heights = []
+
+print("Enter the heights of the bars:")
+for i in range(n):
+    heights.append(int(input()))
+
+
+area, left, right, rect_height = largestRectangleArea(heights)
+
+print("\nHeights =", heights)
+print("Largest Rectangle Area =", area)
+
+# Draw histogram
+plt.figure(figsize=(8,5))
+
+for i in range(len(heights)):
+    if left <= i <= right:
+        plt.bar(i, heights[i], color="red", edgecolor="black")
+    else:
+        plt.bar(i, heights[i], color="skyblue", edgecolor="black")
+
+# Draw rectangle boundary
+plt.plot(
+    [left-0.4, right+0.4, right+0.4, left-0.4, left-0.4],
+    [rect_height, rect_height, 0, 0, rect_height],
+    color="black",
+    linewidth=2
+)
+
+plt.title("Histogram with Largest Rectangle")
+plt.xlabel("Bar Number")
+plt.ylabel("Height")
+plt.grid(axis='y', linestyle='--', alpha=0.5)
+
+plt.show()
